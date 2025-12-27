@@ -3,3 +3,5 @@ aiomysql
 pydantic
 loguru
 confulent-kafka
+toml
+sqlalchemy_utils
