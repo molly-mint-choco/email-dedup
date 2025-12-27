@@ -6,3 +6,5 @@ loguru
 confulent-kafka
 toml
 sqlalchemy_utils
+asyncio
+aiofiles

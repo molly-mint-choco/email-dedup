@@ -1,3 +1,17 @@
+[kafka]
+bootstrap_servers = "localhost:9092"
+topic = "email-ingest"
+    [producer]
+    client_id = "email-ingest-pub"
+
+    [consumer]
+    client_id = "email-ingest-sub"
+    group_id = "email-ingest-sub-group"
+
+
+[email]
+read_dir = "data/eval"
+
 [database]
 username = "root"
 password = "tianyu1996"
