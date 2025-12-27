@@ -1,10 +1,10 @@
 [kafka]
 bootstrap_servers = "localhost:9092"
 topic = "email-ingest"
-    [producer]
+    [kafka.producer]
     client_id = "email-ingest-pub"
 
-    [consumer]
+    [kafka.consumer]
     client_id = "email-ingest-sub"
     group_id = "email-ingest-sub-group"
 

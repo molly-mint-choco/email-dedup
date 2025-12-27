@@ -13,7 +13,7 @@ class PublishEmailService:
         }
         self.topic = config.data['kafka']['topic']
         self.producer = AIOProducer(kafka_configs=self.kafka_configs)
-        logger.info("Service init: PublishEmailService")
+        logger.info(f"Service init: {self.__class__.__name__}")
     
     async def ingest_emails(self):
         logger.info(f"Starting ingestion from: {self.read_dir}")
@@ -33,5 +33,5 @@ class PublishEmailService:
     
     async def close(self):
         self.producer.close()
-        logger.info("Service shut down: PublishEmailService")
+        logger.info(f"Service shut down: {self.__class__.__name__}")
     

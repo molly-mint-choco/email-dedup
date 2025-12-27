@@ -31,7 +31,7 @@ class Database:
         async with self.session_maker() as session:
             try:
                 yield session
-                await session.commit() # commit changes for the last database operation
+                await session.commit() # commit changes for the last database operations
             except Exception as e:
                 await session.rollback()
                 raise

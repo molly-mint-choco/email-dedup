@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Adds the project root to the python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
+
 import asyncio
 from loguru import logger
 from src.app.services.publish_email_service import PublishEmailService
