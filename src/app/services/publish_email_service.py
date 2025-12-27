@@ -12,7 +12,7 @@ class PublishEmailService:
             'client.id': config.data['kafka']['producer']['client_id']
         }
         self.topic = config.data['kafka']['topic']
-        self.producer = AIOProducer(kafka_configs=self.kafka_configs)
+        self.producer = AIOProducer(producer_configs=self.kafka_configs)
         logger.info(f"Service init: {self.__class__.__name__}")
     
     async def ingest_emails(self):

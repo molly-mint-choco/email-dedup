@@ -7,6 +7,8 @@ topic = "email-ingest"
     [kafka.consumer]
     client_id = "email-ingest-sub"
     group_id = "email-ingest-sub-group"
+    max_workers = 2
+    poll_interval = 1.0
 
 
 [email]

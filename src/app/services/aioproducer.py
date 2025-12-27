@@ -4,25 +4,25 @@ from confluent_kafka import Producer, KafkaException
 from loguru import logger
 
 class AIOProducer:
-    def __init__(self, kafka_configs, loop=None) -> None:
+    def __init__(self, producer_configs, loop=None) -> None:
         self._loop = loop or asyncio.get_event_loop()
-        self._producer = Producer(kafka_configs)
+        self._producer = Producer(producer_configs)
         self._cancelled = False
         self._poll_thread = Thread(target=self._poll_loop)
         self._poll_thread.daemon = True
         self._poll_thread.start()
 
     def _poll_loop(self):
-        logger.debug("Background poll loop started.")
+        logger.debug("background poll loop started.")
         while not self._cancelled:
             self._producer.poll(0.1)
-        logger.debug("Background poll loop stopped.")
+        logger.debug("background poll loop stopped.")
     
     def close(self):
         self._cancelled = True
         self._poll_thread.join()
         self._producer.flush()
-        logger.debug("kafka producer is closed, all message flushed to queue")
+        logger.debug("kafka producer is closed, all messages are flushed to queue")
     
     async def produce(self, topic, key, value):
         result = self._loop.create_future()
