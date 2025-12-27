@@ -1,9 +1,7 @@
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Index, Uuid, create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, Session
 from sqlalchemy.sql import func
-from datetime import datetime, timezone
-import json
+from sqlalchemy.dialects.mysql import JSON
 import uuid
 
 Base = declarative_base()
@@ -26,4 +24,11 @@ class Document(Base):
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
 
-    
+class AuditLog(Base):
+    __tablename__ = 'audit_log'
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+    action_type = Column(String(50), nullable=False) # db operation, kafka, api calls
+    action = Column(String(50), nullable=False) # INSERT/UPDATE, Pub/Sub
+    action_content = Column(JSON, nullable=True) # serialized object
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
