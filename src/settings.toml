@@ -9,6 +9,7 @@ topic = "email-ingest"
     group_id = "email-ingest-sub-group"
     max_workers = 2
     poll_interval = 1.0
+    min_commit_count = 1
 
 
 [email]
