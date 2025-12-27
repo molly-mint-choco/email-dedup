@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy_utils import create_database, database_exists
-from src.config import Config
+from sqlalchemy import create_engine
+from src.config import config
 from loguru import logger
+from src.app.domain.data_model import Base
 
-config = Config()
 
 class Database:
     def __init__(self) -> None:
@@ -19,6 +20,11 @@ class Database:
             logger.info(f"Database {config.data['database']['database_name']} created.")
         else:
             logger.info(f"Database {config.data['database']['database_name']} exists.")
+
+        sync_engine = create_engine(self.sync_database_url)
+        Base.metadata.create_all(sync_engine)
+        logger.info("Database {config.data['database']['database_name']} tables creation or verification completed.")
+        sync_engine.dispose()
 
 
     async def get_session_async(self):

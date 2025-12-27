@@ -2,7 +2,7 @@ import tomllib
 
 class Config:
     def __init__(self) -> None:
-        self.CONFIG_FILE_PATH = "settings.toml"
+        self.CONFIG_FILE_PATH = "src/settings.toml"
         self._load_config()
 
     def _load_config(self):
@@ -11,3 +11,5 @@ class Config:
 
     def reload(self):
         self._load_config()
+
+config = Config()

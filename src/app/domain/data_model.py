@@ -20,7 +20,7 @@ class Document(Base):
     id = Column(Uuid, primary_key=True, nullable=False, default=uuid.uuid4) # uuid
     file_name = Column(String(255), nullable=False, index=True)
     cano_id = Column(Uuid, ForeignKey('canonical_thread.id'), nullable=False, index=True)
-    metadata = Column(Text, nullable=True) # raw email content
+    email_metadata = Column(Text, nullable=True) # raw email content
     hash_chain = Column(Text, nullable=True) # simhash
     parent_hash_chain = Column(Text, nullable=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
