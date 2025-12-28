@@ -10,3 +10,4 @@ asyncio
 aiofiles
 orjson
 simhash
+mail-parser

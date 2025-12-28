@@ -57,9 +57,16 @@ class EmailRepository:
         self.session.add(new_cano_thread)
         return new_cano_thread
     
-    async def get_canonical_thread_by_hash_chain_async(self, hash_chain: List[int]) -> Optional[CanonicalThread]
+    async def get_canonical_thread_by_hash_chain_async(self, hash_chain: int) -> Optional[CanonicalThread]
         result = await self.session.execute(
             select(CanonicalThread).where(CanonicalThread.hash_chain == hash_chain)
         )
         return result.scalars().first()
+    
+    async def get_canonical_threads_by_length(self, thread_length: int) -> List[CanonicalThread]:
+        result = await self.session.execute(
+            select(CanonicalThread).where(CanonicalThread.thread_length == thread_length)
+        )
+        return list(result.scalars().all())
+
     # TODO: audit log

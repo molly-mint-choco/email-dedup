@@ -2,7 +2,9 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Inde
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 from sqlalchemy.dialects.mysql import JSON, BIGINT
+from sqlalchemy.orm import Mapped, mapped_column
 import uuid
+from typing import Optional
 
 Base = declarative_base()
 
@@ -10,8 +12,8 @@ class CanonicalThread(Base):
     __tablename__ = 'canonical_thread'
     id = Column(Uuid, primary_key=True, nullable=False, default=uuid.uuid4) # 32 bit uuid (without hyphen)
     parent_id = Column(Uuid, ForeignKey('canonical_thread.id'), nullable=True) # self-contained
-    hash_chain = Column(BIGINT, nullable=True, unique=True, index=True) # 64 bit simhash
-    parent_hash_chain = Column(BIGINT, nullable=True, unique=True, index=True)
+    hash: Mapped[Optional[int]] = mapped_column(BIGINT, nullable=True, unique=True, index=True) # 64 bit simhash
+    parent_hash: Mapped[Optional[int]] = mapped_column(BIGINT, nullable=True, unique=True, index=True)
     thread_length = Column(Integer, nullable=True, index=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
