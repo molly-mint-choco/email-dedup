@@ -18,17 +18,18 @@ class PublishEmailService:
     async def ingest_emails_async(self):
         logger.info(f"Starting ingestion from: {self.read_dir}")
         count = 0
-        for file in self.read_dir.iterdir():
-            if file.is_file():
-                payload = KafkaPayload(file_name=file.name)
-                logger.debug(f"Preparing to send: {payload.file_name} from source node {payload.source_node}")
-                await self.producer.produce_async(
-                    topic=self.topic,
-                    key=None,
-                    value=payload.to_json()
-                )
-                logger.success(f"Sent successfully: {payload.file_name} from source node {payload.source_node}")
-                count += 1
+        files = [entry for entry in self.read_dir.iterdir() if entry.is_file()] # TODO: replace with async lib: anyio
+        files.sort(key=lambda file: file.stat().st_ctime, reverse=False)
+        for file in files:
+            payload = KafkaPayload(file_name=file.name)
+            logger.debug(f"Preparing to send: {payload.file_name} from source node {payload.source_node}")
+            await self.producer.produce_async(
+                topic=self.topic,
+                key=None,
+                value=payload.to_json()
+            )
+            logger.success(f"Sent successfully: {payload.file_name} from source node {payload.source_node}")
+            count += 1
         logger.info(f"Ingestion finished. Total files read and sent: {count}")
     
     async def close_async(self):

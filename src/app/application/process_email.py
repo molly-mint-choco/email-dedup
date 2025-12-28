@@ -52,7 +52,8 @@ class EmailHandler:
                 new_doc.cano_id = new_cano.id
                 if thread_length > 1: # for every new insertion, calculate the parent hash
                     parent_hash = await self.generate_hash_async(self.divider.join(email_parts[:-1])) # simhash of the parent content
-                    new_cano.parent_hash = parent_hash.value
+                    if parent_hash:
+                        new_cano.parent_hash = parent_hash.value
 
     def normalize(self, text: str) -> str:
         t = text.lower().strip()
