@@ -3,12 +3,16 @@ from src.config import config
 from src.app.services.aioproducer import AIOProducer
 from src.app.services.kafka_payload import KafkaPayload
 from loguru import logger
+import os
 
 class PublishEmailService:
     def __init__(self) -> None:
+        self.ENV = os.getenv("APP_ENV", "development")
+        self.KAFKA_SERVERS = os.getenv("KAFKA_SERVERS")
+        
         self.read_dir = Path(config.data['email']['read_dir'])
         self.kafka_configs = {
-            'bootstrap.servers': config.data['kafka']['bootstrap_servers'],
+            'bootstrap.servers': config.data['kafka']['bootstrap_servers'] if not self.ENV == 'production' else self.KAFKA_SERVERS,
             'client.id': config.data['kafka']['producer']['client_id']
         }
         self.topic = config.data['kafka']['topic']

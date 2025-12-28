@@ -4,13 +4,16 @@ from sqlalchemy import create_engine
 from src.config import config
 from loguru import logger
 from src.app.domain.data_model import Base
+import os
 
 
 class Database:
     def __init__(self) -> None:
+        self.ENV = os.getenv("APP_ENV", "development")
+        self.DB_HOST = os.getenv("DB_HOST")
         # DB set up
-        self.sync_database_url = f"mysql+pymysql://{config.data['database']['username']}:{config.data['database']['password']}@{config.data['database']['host']}:{config.data['database']['port']}/{config.data['database']['database_name']}"
-        self.async_database_url = f"mysql+aiomysql://{config.data['database']['username']}:{config.data['database']['password']}@{config.data['database']['host']}:{config.data['database']['port']}/{config.data['database']['database_name']}"
+        self.sync_database_url = f"mysql+pymysql://{config.data['database']['username']}:{config.data['database']['password']}@{config.data['database']['host'] if not self.ENV == 'production' else self.DB_HOST}:{config.data['database']['port']}/{config.data['database']['database_name']}"
+        self.async_database_url = f"mysql+aiomysql://{config.data['database']['username']}:{config.data['database']['password']}@{config.data['database']['host'] if not self.ENV == 'production' else self.DB_HOST}:{config.data['database']['port']}/{config.data['database']['database_name']}"
         self.engine = create_async_engine(self.async_database_url)
         self.session_maker = async_sessionmaker(bind=self.engine, class_=AsyncSession, expire_on_commit=False)
 

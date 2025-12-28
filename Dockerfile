@@ -12,10 +12,12 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ .
+COPY src/ ./src/
+
+COPY data/ ./data/
 
 ENV PYTHONPATH=/app
 
 EXPOSE 8000
 
-CMD ["python", "main.py"]
+CMD ["python", "src/main.py"]

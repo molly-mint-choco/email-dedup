@@ -19,10 +19,12 @@ spec:
         ports:
         - containerPort: 8000
         env:
-        - name: DATABASE_URL
-          value: "mysql+aiomysql://user:pass@mysql-service:3306/db"
-        - name: KAFKA_BOOTSTRAP_SERVERS
-          value: "kafka-service:9092"
+        - name: APP_ENV
+          value: "production"
+        - name: KAFKA_SERVERS
+          value: "host.docker.internal:9092"
+        - name: DB_HOST
+          value: "host.docker.internal"
 
 ---
 apiVersion: v1

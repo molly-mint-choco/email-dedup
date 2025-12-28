@@ -6,11 +6,15 @@ from confluent_kafka import Message, KafkaError
 import orjson
 from src.app.services.kafka_payload import KafkaPayload
 from app.application.email_processor import EmailProcessor
+import os
 
 class SubscribeEmailService:
     def __init__(self) -> None:
+        self.ENV = os.getenv("APP_ENV", "development")
+        self.KAFKA_SERVERS = os.getenv("KAFKA_SERVERS")
+
         self.kafka_configs = {
-            'bootstrap.servers': config.data['kafka']['bootstrap_servers'],
+            'bootstrap.servers': config.data['kafka']['bootstrap_servers'] if not self.ENV == 'production' else self.KAFKA_SERVERS,
             'group.id': config.data['kafka']['consumer']['group_id'],
             'client.id': config.data['kafka']['consumer']['client_id'],
             'auto.offset.reset': 'earliest'
