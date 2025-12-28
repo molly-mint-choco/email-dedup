@@ -5,6 +5,7 @@ from loguru import logger
 from confluent_kafka import Message, KafkaError
 import orjson
 from src.app.services.kafka_payload import KafkaPayload
+from src.app.application.email_handler import EmailHandler
 
 class SubscribeEmailService:
     def __init__(self) -> None:
@@ -20,6 +21,7 @@ class SubscribeEmailService:
         self.min_commit_count = config.data['kafka']['consumer']['min_commit_count']
         self.consumer = AIOConsumer(consumer_configs=self.kafka_configs, topics=self.topics, max_workers=self.max_workers)
         self.is_running = False
+        self.email_handler = EmailHandler()
         logger.info(f"Service init: {self.__class__.__name__}")
     
     async def start_consumer_loop_async(self):
@@ -44,6 +46,7 @@ class SubscribeEmailService:
             else:
                 logger.debug(f"Received message from Kafka: {msg.value().decode('utf-8')}")
                 payload = KafkaPayload.from_json(msg.value())
+                await self.email_handler.process_async(payload.file_name)
                 count += 1
                 if count % self.min_commit_count == 0:
                     await self.consumer.commit_async()

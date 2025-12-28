@@ -18,15 +18,14 @@ class EmailHandler:
         self.bit_distance_threshold = config.data['email']['threshold']
         self.max_workers = config.data['email']['max_workers']
         self.executor = ThreadPoolExecutor(max_workers=self.max_workers)
-        self.divider = "-----Original Message-----"
+        self.divider = "-----original message-----"
         self.db = Database()
 
     async def process_async(self, file_name):
         raw_content = await self.read_document_content_async(file_name)
-        normalized_content = self.normalize(raw_content)
-        email_parts = self.split_emails(normalized_content)
+        email_parts = self.split_emails(raw_content)
         thread_length = len(email_parts)
-        self_hash = await self.generate_hash_async(normalized_content) # simhash of the whole content
+        self_hash = await self.generate_hash_async(raw_content) # simhash of the whole content
         new_doc = Document(
             id = uuid.uuid4(),
             file_name = file_name,
@@ -38,11 +37,13 @@ class EmailHandler:
             is_duplicate = False
             if same_len_cano_threads: # check if equal by simhash
                 for cano_thread in same_len_cano_threads:
-                    is_duplicate = await self.check_near_duplicate_async(self_hash, Simhash(value=cano_thread.hash))
-                    if is_duplicate:
-                        logger.info(f"Found duplicate canonical thread in db: {cano_thread.id}")
-                        new_doc.cano_id = cano_thread.id
-                        break
+                    if cano_thread.hash is not None:
+                        is_duplicate = await self.check_near_duplicate_async(self_hash, Simhash(int(cano_thread.hash))) # type: ignore
+                        if is_duplicate:
+                            logger.info(f"Found duplicate canonical thread in db: {cano_thread.id}")
+                            new_doc.cano_id = cano_thread.id
+                            break
+            
             if not same_len_cano_threads or not is_duplicate:
                 new_cano = CanonicalThread(
                     id = uuid.uuid4(),
@@ -51,9 +52,15 @@ class EmailHandler:
                 )
                 new_doc.cano_id = new_cano.id
                 if thread_length > 1: # for every new insertion, calculate the parent hash
-                    parent_hash = await self.generate_hash_async(self.divider.join(email_parts[:-1])) # simhash of the parent content
-                    if parent_hash:
-                        new_cano.parent_hash = parent_hash.value
+                    parent_content = self.divider.join(email_parts[:-1])
+                    parent_hash = await self.generate_hash_async(parent_content) # simhash of the parent content
+                    new_cano.parent_hash = str(parent_hash.value) # type: ignore
+                    parent_thread = await repo.get_canonical_thread_by_hash_async(parent_hash.value) # type: ignore
+                    if parent_thread:
+                        new_cano.parent_id = parent_thread.id
+                await repo.insert_canonical_thread_async(new_cano)
+            
+            await repo.insert_document_async(new_doc)
 
     def normalize(self, text: str) -> str:
         t = text.lower().strip()
@@ -82,6 +89,7 @@ class EmailHandler:
         return Simhash(text)
 
     async def generate_hash_async(self, text: str) -> Simhash:
+        text = self.normalize(text)
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(self.executor, self._generate_hash, text)
     

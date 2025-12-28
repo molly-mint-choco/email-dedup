@@ -22,8 +22,9 @@ async def test_repo():
             file_name = test_file,
             cano_id = new_cano_thread.id,
             email_metadata = test_content,
-            hash_chain = '0-1',
-            parent_hash_chain = '0-1-2'
+            thread_length = 3,
+            hash = '0-1-2',
+            parent_hash = '0-1'
         )
     
     logger.debug("starting a new session from db")

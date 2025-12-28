@@ -57,9 +57,9 @@ class EmailRepository:
         self.session.add(new_cano_thread)
         return new_cano_thread
     
-    async def get_canonical_thread_by_hash_chain_async(self, hash_chain: int) -> Optional[CanonicalThread]
+    async def get_canonical_thread_by_hash_async(self, hash: int) -> Optional[CanonicalThread]:
         result = await self.session.execute(
-            select(CanonicalThread).where(CanonicalThread.hash_chain == hash_chain)
+            select(CanonicalThread).where(CanonicalThread.hash == hash)
         )
         return result.scalars().first()
     
