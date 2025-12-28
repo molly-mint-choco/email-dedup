@@ -3,10 +3,9 @@ sqlalchemy>=2.0.0
 aiomysql
 pydantic
 loguru
-confulent-kafka
+confluent-kafka
 toml
 sqlalchemy_utils
-asyncio
 aiofiles
 orjson
 simhash
