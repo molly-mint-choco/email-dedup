@@ -8,3 +8,4 @@ toml
 sqlalchemy_utils
 asyncio
 aiofiles
+orjson

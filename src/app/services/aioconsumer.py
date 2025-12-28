@@ -15,18 +15,18 @@ class AIOConsumer:
     async def _call(self, blocking_task: Callable, *args: Any) -> Any:
         return await self._loop.run_in_executor(self.executor, blocking_task, *args)
     
-    async def subscribe(self):
+    async def subscribe_async(self):
         await self._call(self._consumer.subscribe, self.topics)
         logger.info(f"subscribed to topics: {self.topics}")
     
-    async def poll(self, timeout=1.0) -> Optional[Message]:
+    async def poll_async(self, timeout=1.0) -> Optional[Message]:
         return await self._call(self._consumer.poll, timeout)
     
-    async def commit(self):
+    async def commit_async(self):
         task = partial(self._consumer.commit, asynchronous=True)
         await self._call(task)
     
-    async def close(self):
+    async def close_async(self):
         await self._call(self._consumer.close)
         self.executor.shutdown(wait=True)
         logger.info("kafka consumer is closed")

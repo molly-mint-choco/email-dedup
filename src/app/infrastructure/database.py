@@ -38,7 +38,9 @@ class Database:
             finally:
                 await session.close()
 
-
+    async def dispose_async(self):
+        await self.engine.dispose()
+        logger.info("Database engine disposed successfully.")
 
 
 

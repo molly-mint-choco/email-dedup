@@ -12,11 +12,11 @@ async def test_run_sub():
     service = SubscribeEmailService()
     logger.debug("Starting consumer test")
     try:
-        await service.start_consumer_loop()
+        await service.start_consumer_loop_async()
     except KeyboardInterrupt:
         logger.debug("Manually stopped consumer test")
     finally:
-        await service.close()
+        await service.close_async()
         logger.debug("Consumer test execution finished.")
 
 if __name__ == '__main__':

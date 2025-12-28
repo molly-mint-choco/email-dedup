@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 import socket
-import json
+import orjson
 
 @dataclass
 class KafkaPayload:
@@ -11,9 +11,9 @@ class KafkaPayload:
     ingested_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
     def to_json(self) -> str:
-        return json.dumps(asdict(self))
+        return orjson.dumps(asdict(self)).decode('utf-8')
     
     @classmethod
     def from_json(cls, json_str: str) -> 'KafkaPayload':
-        data = json.loads(json_str)
+        data = orjson.loads(json_str)
         return cls(**data)

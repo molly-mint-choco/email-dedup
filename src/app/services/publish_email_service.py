@@ -15,14 +15,14 @@ class PublishEmailService:
         self.producer = AIOProducer(producer_configs=self.kafka_configs)
         logger.info(f"Service init: {self.__class__.__name__}")
     
-    async def ingest_emails(self):
+    async def ingest_emails_async(self):
         logger.info(f"Starting ingestion from: {self.read_dir}")
         count = 0
         for file in self.read_dir.iterdir():
             if file.is_file():
                 payload = KafkaPayload(file_name=file.name)
                 logger.debug(f"Preparing to send: {payload.file_name} from source node {payload.source_node}")
-                await self.producer.produce(
+                await self.producer.produce_async(
                     topic=self.topic,
                     key=None,
                     value=payload.to_json()
@@ -31,7 +31,7 @@ class PublishEmailService:
                 count += 1
         logger.info(f"Ingestion finished. Total files read and sent: {count}")
     
-    async def close(self):
+    async def close_async(self):
         self.producer.close()
         logger.info(f"Service shut down: {self.__class__.__name__}")
     

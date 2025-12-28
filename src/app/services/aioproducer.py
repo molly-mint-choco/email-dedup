@@ -24,12 +24,12 @@ class AIOProducer:
         self._producer.flush()
         logger.debug("kafka producer is closed, all messages are flushed to queue")
     
-    async def produce(self, topic, key, value):
+    async def produce_async(self, topic, key, value):
         result = self._loop.create_future()
-        def ack(err, msg): # callback function
+        def delivery_callback(err, msg):
             if err:
                 self._loop.call_soon_threadsafe(result.set_exception, KafkaException(err))
             else:
                 self._loop.call_soon_threadsafe(result.set_result, msg)
-        self._producer.produce(topic, key=key, value=value, on_delivery=ack)
+        self._producer.produce(topic, key=key, value=value, on_delivery=delivery_callback)
         return await result

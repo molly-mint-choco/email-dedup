@@ -2,7 +2,9 @@ import asyncio
 from src.config import config
 from src.app.services.aioconsumer import AIOConsumer
 from loguru import logger
-from confluent_kafka import Message, KafkaError, KafkaException
+from confluent_kafka import Message, KafkaError
+import orjson
+from src.app.services.kafka_payload import KafkaPayload
 
 class SubscribeEmailService:
     def __init__(self) -> None:
@@ -20,14 +22,14 @@ class SubscribeEmailService:
         self.is_running = False
         logger.info(f"Service init: {self.__class__.__name__}")
     
-    async def start_consumer_loop(self):
-        await self.consumer.subscribe()
+    async def start_consumer_loop_async(self):
+        await self.consumer.subscribe_async()
         self.is_running = True
         logger.info(f"Starting listening to topic: {self.topics}")
         count = 0
 
         while self.is_running:
-            msg = await self.consumer.poll(timeout=self.poll_interval)
+            msg = await self.consumer.poll_async(timeout=self.poll_interval)
             if not msg: # no emails in queue
                 continue
 
@@ -40,17 +42,18 @@ class SubscribeEmailService:
                     continue
             
             else:
-                # process_message(msg)
-                logger.success(f"Received message from Kafka: {msg.value().decode('utf-8')}")
+                logger.debug(f"Received message from Kafka: {msg.value().decode('utf-8')}")
+                payload = KafkaPayload.from_json(msg.value())
                 count += 1
                 if count % self.min_commit_count == 0:
-                    await self.consumer.commit()
+                    await self.consumer.commit_async()
         
-        # service.close
+        # consumer.close
 
-    async def close(self):
+    async def close_async(self):
         self.is_running = False
         if self.consumer:
-            await self.consumer.close()
+            await self.consumer.close_async()
         logger.info(f"Service shut down: {self.__class__.__name__}")
+
 
