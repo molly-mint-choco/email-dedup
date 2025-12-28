@@ -10,4 +10,5 @@ asyncio
 aiofiles
 orjson
 simhash
-mail-parser
+fastapi
+uvicorn

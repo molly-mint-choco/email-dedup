@@ -23,7 +23,7 @@ class EmailRepository:
     
     async def get_canonical_thread_by_id_async(self, cano_id: uuid.UUID) -> Optional[CanonicalThread]:
         result = await self.session.execute(
-            select(CanonicalThread).where(CanonicalThread.id == cano_id)
+            select(CanonicalThread).where(CanonicalThread.id == str(cano_id))
         )
         return result.scalars().first()
 
@@ -35,21 +35,21 @@ class EmailRepository:
     
     async def get_filenames_by_cano_id(self, cano_id: uuid.UUID) -> List[str]:
         result = await self.session.execute(
-            select(Document.file_name).where(Document.cano_id == cano_id)
+            select(Document.file_name).where(Document.cano_id == str(cano_id))
         )
         return list(result.scalars().all())
     
     async def get_parent_cano_id_by_cano_id_async(self, cano_id: uuid.UUID) -> Optional[uuid.UUID]:
         # a child only has one parent
         result = await self.session.execute(
-            select(CanonicalThread.parent_id).where(CanonicalThread.id == cano_id)
+            select(CanonicalThread.parent_id).where(CanonicalThread.id == str(cano_id))
         )
         return result.scalars().first()
     
     async def get_cano_ids_by_parent_id_async(self, parent_cano_id: uuid.UUID) -> List[uuid.UUID]:
         # a parent can have multiple children, e,g, 0-1(P), 0-1-2(C1), 0-1-3(C2)
         result = await self.session.execute(
-            select(CanonicalThread.id).where(CanonicalThread.parent_id == parent_cano_id)
+            select(CanonicalThread.id).where(CanonicalThread.parent_id == str(parent_cano_id))
         )
         return list(result.scalars().all())
 
