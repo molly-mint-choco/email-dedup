@@ -14,6 +14,8 @@ topic = "email-ingest"
 
 [email]
 read_dir = "data/eval"
+max_workers = 4
+threshold = 3
 
 [database]
 username = "root"
