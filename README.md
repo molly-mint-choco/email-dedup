@@ -9,7 +9,7 @@ A high-performance scalable email deduplication system that identifies duplicate
 - **Async Architecture**: Built with FastAPI and async/await for high-performance processing
 - **Kafka Integration**: Producer-consumer pattern for scalable email ingestion
 - **REST API**: Query canonical threads, document mappings, and thread hierarchies
-- **MySQL Storage**: Persistent storage with SQLAlchemy ORM
+- **Code-First MySQL Storage**: Using code-first approach to initialize database with SQLAlchemy ORM
 
 ## Architecture
 
@@ -28,7 +28,7 @@ src/
 └── main.py          # Application entry point
 ```
 
-## <mark><span style="color:red">Assumptions</span></mark> ❗❗
+## ❗❗<mark><span style="color:red">Assumptions</span></mark>❗❗
 
 ### Emails and Thread Relations
 
@@ -110,9 +110,12 @@ src/
 
 ### Running with Kubernetes
 
+Set up kafka service for kubernetes, then run the following command.
+
 ```bash
 docker build -t email-dedup:latest .
 kubectl apply -n email-dedup -f deployment.yaml
+kubectl rollout status -n email-dedup deploy/email-dedup-app
 ```
 
 ### Running Locally
@@ -162,6 +165,8 @@ Returns the complete upstream hierarchy chain for a canonical thread.
 
 ## Configuration
 
+### Application
+
 Key configuration parameters in `settings.toml`:
 
 | Parameter | Description | Default |
@@ -170,6 +175,21 @@ Key configuration parameters in `settings.toml`:
 | `email.max_workers` | Thread pool size for hash computation | 4 |
 | `kafka.consumer.max_workers` | Concurrent Kafka consumer workers | 2 |
 | `kafka.consumer.poll_interval` | Kafka polling interval (seconds) | 1.0 |
+| `kafka.consumer.min_commit_count` | Decide consumer commit frequency | 1 |
+
+### Kubernetes Deployment
+
+Key configuration parameters in `deployment.yaml`:
+
+| Config | Description |
+|------|-------------|
+| `initContainers.wait-for-kafka` | Blocks application startup until Kafka is reachable |
+| `APP_ENV` | Distinguishes runtime environment (local vs container) |
+| `KAFKA_SERVERS` | Kafka bootstrap address |
+| `KAFKA_SECURITY_PROTOCOL` | SASL authentication protocol |
+| `KAFKA_SASL_MECHANISM` | SCRAM authentication mechanism |
+| `KAFKA_SASL_USERNAME` | Kafka client identity |
+| `KAFKA_SASL_PASSWORD` | Retrieved securely from a Kubernetes Secret |
 
 ## Data Model
 
@@ -201,7 +221,7 @@ The project follows Domain-Driven Design (DDD) principles with clear separation 
 - **API Layer**: HTTP interface
 
 ### Testing
-Test files are located in the respective service directories and include:
+Simple functional test files are located in the respective service directories and include:
 - `test_run_db.py`: Database connection tests
 - `test_run_pub.py`: Kafka producer tests
 - `test_run_sub.py`: Kafka consumer tests
@@ -221,15 +241,12 @@ See [requirements.txt](requirements.txt) for complete list.
 
 ## Performance Considerations
 
+- **Producer/Consumer Design**: Use an event-driven approach to improve scalability for potential heavy workloads, decoupling components.
 - **Batch Processing**: Uses thread pool for parallel hash computation
 - **Database Optimization**: Indexes on hash, thread_length, and foreign keys
 - **Length-based Filtering**: Pre-filters candidates by thread length before computing hash distance
 - **Async I/O**: Non-blocking file and database operations
+- **Domain Driven Design**: Adopt domain driven design to keep solution modular, resilient and adaptable
 
-## License
-
-See LICENSE file for details.
-
-## Support
-
-For issues and questions, please open an issue on the project repository.
+## Improvement Features
+- Use Redis to maintain a canonical thread pool containing only validated threads, avoid repeated database queries each time for SimHash comparisons.
