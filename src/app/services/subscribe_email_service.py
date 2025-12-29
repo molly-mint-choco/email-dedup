@@ -5,7 +5,7 @@ from loguru import logger
 from confluent_kafka import Message, KafkaError
 import orjson
 from src.app.services.kafka_payload import KafkaPayload
-from app.application.email_processor import EmailProcessor
+from src.app.application.email_processor import EmailProcessor
 import os
 
 class SubscribeEmailService:
@@ -61,6 +61,8 @@ class SubscribeEmailService:
         self.is_running = False
         if self.consumer:
             await self.consumer.close_async()
+        if self.email_processor:
+            self.email_processor.close()
         logger.info(f"Service shut down: {self.__class__.__name__}")
 
 

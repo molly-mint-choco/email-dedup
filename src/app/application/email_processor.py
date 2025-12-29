@@ -137,5 +137,6 @@ class EmailProcessor:
         distance = await loop.run_in_executor(self.executor, lambda: hash1.distance(hash2))
         return distance <= self.bit_distance_threshold
     
-    def shutdown(self):
+    def close(self):
         self.executor.shutdown(wait=True)
+        logger.info("Email processor executor is shutdown.")

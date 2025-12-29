@@ -11,3 +11,4 @@ orjson
 simhash
 fastapi
 uvicorn
+cryptography
