@@ -1,0 +1,213 @@
+# Email Deduplication System
+
+A high-performance email deduplication system that identifies duplicate and near-duplicate email threads using similarity hashing. The system processes email documents, detects thread hierarchies, and exposes a REST API for querying canonical threads.
+
+## Features
+
+- **Near-Duplicate Detection**: Uses SimHash algorithm to identify duplicate and near-duplicate emails with configurable bit distance threshold
+- **Thread Hierarchy Tracking**: Automatically identifies parent-child relationships in email threads
+- **Async Architecture**: Built with FastAPI and async/await for high-performance processing
+- **Kafka Integration**: Producer-consumer pattern for scalable email ingestion
+- **REST API**: Query canonical threads, document mappings, and thread hierarchies
+- **MySQL Storage**: Persistent storage with SQLAlchemy ORM
+
+## Architecture
+
+The system follows clean architecture principles with distinct layers:
+
+```
+src/
+├── app/
+│   ├── api/          # REST API routes
+│   ├── application/  # Business logic
+│   ├── domain/       # Data models
+│   ├── infrastructure/  # Database and repository implementations
+│   └── services/     # Kafka producer/consumer services
+├── config.py         # Configuration loader
+├── settings.toml     # Configuration file
+└── main.py          # Application entry point
+```
+
+## How It Works
+
+1. **Email Ingestion**: Producer service reads email files and publishes to Kafka
+2. **Email Processing**: Consumer service processes emails:
+   - Computes SimHash for the entire email content
+   - Splits emails into thread parts using predefined delimiter
+   - Checks for near-duplicates against existing canonical threads
+   - Creates new canonical thread or links to existing duplicate
+   - Identifies parent threads by hashing email content minus most recent part
+3. **API Queries**: REST API provides access to thread relationships and document mappings
+
+## Prerequisites
+
+- Python 3.13+
+- MySQL 5.7+ or 8.0+
+- Apache Kafka (for distributed processing)
+- Docker (for kubernetes deployment)
+
+## Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd email-dedup
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Configure the system**
+   
+   Edit `src/settings.toml` with your configuration:
+   ```toml
+   [database]
+   username = "your_db_user"
+   password = "your_db_password"
+   host = "localhost"
+   port = 3306
+   database_name = "email_dedup"
+   
+   [kafka]
+   bootstrap_servers = "localhost:9092"
+   topic = "email-ingest"
+   
+   [email]
+   read_dir = "data/eval"
+   max_workers = 4
+   threshold = 10  # SimHash bit distance threshold
+   ```
+
+4. **Set up the database**
+   
+   The application will automatically create tables on first run.
+
+## Usage
+
+### Running with Kubernetes
+
+```bash
+docker build -t email-dedup:latest .
+kubectl apply -n email-dedup -f deployment.yaml
+```
+
+### Running Locally
+
+```bash
+python src/main.py
+```
+
+This starts three concurrent services:
+- **REST API**: 
+  - local: http://localhost:8000/docs
+  - k8s: http://localhost:30080/docs
+- **Kafka Producer**: Ingests emails from configured directory
+- **Kafka Consumer**: Processes emails and stores results
+
+### API Endpoints
+
+#### Get Canonical ID by Document
+```http
+GET /emails/document/{file_name}/canonical-id
+```
+Returns the canonical thread ID for a given document.
+
+#### Get Documents by Canonical Thread
+```http
+GET /emails/canonical-thread/{cano_id}/documents
+```
+Returns all document filenames associated with a canonical thread.
+
+#### Get Child Threads
+```http
+GET /emails/canonical-thread/{cano_id}/children
+```
+Returns all child thread IDs for a given canonical thread.
+
+#### Get Parent Thread
+```http
+GET /emails/canonical-thread/{cano_id}/parent
+```
+Returns the parent thread ID for a given canonical thread.
+
+#### Get Hierarchy Chain
+```http
+GET /emails/canonical-thread/{cano_id}/upstream
+```
+Returns the complete upstream hierarchy chain for a canonical thread.
+
+## Configuration
+
+Key configuration parameters in `settings.toml`:
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `email.threshold` | SimHash bit distance threshold for duplicate detection | 10 |
+| `email.max_workers` | Thread pool size for hash computation | 4 |
+| `kafka.consumer.max_workers` | Concurrent Kafka consumer workers | 2 |
+| `kafka.consumer.poll_interval` | Kafka polling interval (seconds) | 1.0 |
+
+## Data Model
+
+### CanonicalThread
+Represents a unique email thread:
+- `id`: UUID primary key
+- `parent_id`: Self-referencing foreign key for thread hierarchy
+- `hash`: 64-bit SimHash value
+- `parent_hash`: Hash of parent thread content
+- `thread_length`: Number of emails in thread
+
+### Document
+Represents an email document:
+- `id`: UUID primary key
+- `file_name`: Original filename
+- `cano_id`: Foreign key to CanonicalThread
+- `email_metadata`: Raw email content
+
+### AuditLog
+Tracks all system operations for auditability.
+
+## Development
+
+### Project Structure
+The project follows Domain-Driven Design (DDD) principles with clear separation of concerns:
+- **Domain Layer**: Core business entities and logic
+- **Application Layer**: Use cases and business workflows
+- **Infrastructure Layer**: External services (database)
+- **API Layer**: HTTP interface
+
+### Testing
+Test files are located in the respective service directories and include:
+- `test_run_db.py`: Database connection tests
+- `test_run_pub.py`: Kafka producer tests
+- `test_run_sub.py`: Kafka consumer tests
+
+## Dependencies
+
+Key libraries used:
+- **FastAPI**: Modern web framework for building APIs
+- **SQLAlchemy 2.0+**: SQL toolkit and ORM
+- **aiomysql**: Async MySQL driver
+- **confluent-kafka**: Kafka client
+- **simhash**: Similarity hashing implementation
+- **loguru**: Simplified logging
+- **pydantic**: Data validation
+
+See [requirements.txt](requirements.txt) for complete list.
+
+## Performance Considerations
+
+- **Batch Processing**: Uses thread pool for parallel hash computation
+- **Database Optimization**: Indexes on hash, thread_length, and foreign keys
+- **Length-based Filtering**: Pre-filters candidates by thread length before computing hash distance
+- **Async I/O**: Non-blocking file and database operations
+
+## License
+
+See LICENSE file for details.
+
+## Support
+
+For issues and questions, please open an issue on the project repository.
