@@ -8,13 +8,22 @@ import os
 class PublishEmailService:
     def __init__(self) -> None:
         self.ENV = os.getenv("APP_ENV", "development")
-        self.KAFKA_SERVERS = os.getenv("KAFKA_SERVERS")
         
         self.read_dir = Path(config.data['email']['read_dir'])
         self.kafka_configs = {
-            'bootstrap.servers': config.data['kafka']['bootstrap_servers'] if not self.ENV == 'production' else self.KAFKA_SERVERS,
+            'bootstrap.servers': config.data['kafka']['bootstrap_servers'],
             'client.id': config.data['kafka']['producer']['client_id']
         }
+
+        if self.ENV == "production":
+            self.kafka_configs["bootstrap.servers"] = os.getenv("KAFKA_SERVERS")
+            self.kafka_configs["security.protocol"] = os.getenv("KAFKA_SECURITY_PROTOCOL")
+            self.kafka_configs["sasl.mechanism"] = os.getenv("KAFKA_SASL_MECHANISM")
+            self.kafka_configs["sasl.username"] = os.getenv("KAFKA_SASL_USERNAME")
+            self.kafka_configs["sasl.password"] = os.getenv("KAFKA_SASL_PASSWORD")
+
+        logger.info(f'publish kafka configs: {self.kafka_configs}')
+
         self.topic = config.data['kafka']['topic']
         self.producer = AIOProducer(producer_configs=self.kafka_configs)
         logger.info(f"Service init: {self.__class__.__name__}")
