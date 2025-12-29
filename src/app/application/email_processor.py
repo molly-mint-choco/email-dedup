@@ -125,10 +125,10 @@ class EmailProcessor:
             raise
     
     def _generate_hash(self, text: str) -> Simhash:
+        text = self.normalize(text)
         return Simhash(text)
 
     async def generate_hash_async(self, text: str) -> Simhash:
-        text = self.normalize(text)
         loop = asyncio.get_running_loop()
         return await loop.run_in_executor(self.executor, self._generate_hash, text)
     

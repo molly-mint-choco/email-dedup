@@ -10,7 +10,7 @@ Base = declarative_base()
 
 class CanonicalThread(Base):
     __tablename__ = 'canonical_thread'
-    id: Mapped[uuid.UUID] = mapped_column(String(36), primary_key=True, nullable=False, default=uuid.uuid4) # 32 bit uuid (without hyphen)
+    id: Mapped[uuid.UUID] = mapped_column(String(36), primary_key=True, nullable=False, default=uuid.uuid4) # 36 bit uuid
     parent_id: Mapped[uuid.UUID] = mapped_column(String(36), ForeignKey('canonical_thread.id'), nullable=True) # self-contained
     hash = Column(String(64), nullable=True, unique=True, index=True) # 64 bit simhash
     parent_hash = Column(String(64), nullable=True, index=True)
