@@ -1,6 +1,6 @@
 # Email Deduplication System
 
-A high-performance email deduplication system that identifies duplicate and near-duplicate email threads using similarity hashing. The system processes email documents, detects thread hierarchies, and exposes a REST API for querying canonical threads.
+A high-performance scalable email deduplication system that identifies duplicate and near-duplicate email threads using similarity hashing. The system processes email documents, detects thread hierarchies, and exposes a REST API for querying canonical threads.
 
 ## Features
 
@@ -28,12 +28,34 @@ src/
 └── main.py          # Application entry point
 ```
 
+## <mark><span style="color:red">Assumptions</span></mark> ❗❗
+
+### Emails and Thread Relations
+
+- All emails come in chronological order. 
+- Parent emails come in before child emails.
+- Assume deduplication is performed on a parent email before any of its child emails arrive. As a result, scenarios like 0-1m-2 will not occur, since a near-duplicate parent (0-1m) would already have been removed before the next canonical thread is generated.
+- The first email received in the canonical thread is considered the baseline. Any emails belonging to the same canonical thread that arrive after the baseline and are duplicates or near-duplicates are labeled accordingly. For example, the first email is labeled 0-1; a near-duplicate arriving after 0-1 is labeled 0-1m. A near-duplicate email (0-1m) cannot logically arrive before the original baseline email (0-1). Duplicate emails will be removed (but will still be saved in the Document table in the database).
+- A parent email can have multiple child emails, e.g., 0-1 (P), 0-1-2 (C1), 0-1-3 (C2). 
+- A child email can have only one parent; i.e., the canonical thread relations are traceable upwards only.
+- The canonical thread hierarchy follows a tree structure.
+
+### Content Parsing
+
+- Replies appear on top of the previous emails in a single document.
+- Replies are separated by a predefined divider. Assume it’s ‘-----Original Message-----’
+- We’re not considering sender, recipient, topic, subject, datetime, etc., information as identifiers to separate replies and distinguish emails. 
+
+### Data Ingestion
+
+* To simulate the sequential arrival of emails in real life, files are read from the data folder in order of their creation time and processed through a data ingestion pipeline using a message queue.
+
 ## How It Works
 
 1. **Email Ingestion**: Producer service reads email files and publishes to Kafka
 2. **Email Processing**: Consumer service processes emails:
    - Computes SimHash for the entire email content
-   - Splits emails into thread parts using predefined delimiter
+   - Splits emails into parts using predefined delimiter
    - Checks for near-duplicates against existing canonical threads
    - Creates new canonical thread or links to existing duplicate
    - Identifies parent threads by hashing email content minus most recent part
