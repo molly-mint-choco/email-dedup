@@ -1,0 +1,16 @@
+From: Alice Tan <alice.tan@acme.test>
+To: Backend Team <backend@acme.test>
+Date: Wed, 04 Dec 2024 09:00:00 +0800
+Subject: Kafka retention settings
+
+Hi team,
+
+For the email dedup service, I suggest:
+- email-ingest retention: 7 days
+- email-dedup retention: 30 days
+
+This should be enough for debugging and replay.
+If storage becomes an issue, we can reduce ingest retention later.
+
+Thanks,
+Alice

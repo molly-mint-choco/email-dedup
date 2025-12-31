@@ -9,7 +9,7 @@ A high-performance scalable email deduplication system that identifies duplicate
 - **Async Architecture**: Built with FastAPI and async/await for high-performance processing
 - **Kafka Integration**: Producer-consumer pattern for scalable email ingestion
 - **REST API**: Query canonical threads, document mappings, and thread hierarchies
-- **Code-First MySQL Storage**: Using code-first approach to initialize database with SQLAlchemy ORM
+- **Code-First MySQL Storage**: Uses code-first approach to initialize database with SQLAlchemy ORM
 
 ## Architecture
 

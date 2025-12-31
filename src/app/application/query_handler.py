@@ -1,8 +1,8 @@
 import asyncio
 import uuid
 from typing import List, Dict, Any, Optional
-from src.app.infrastructure.database import Database
-from src.app.infrastructure.repo import EmailRepository
+from app.infrastructure.database import Database
+from app.infrastructure.repo import EmailRepository
 
 class EmailQueryHandler:
     def __init__(self):

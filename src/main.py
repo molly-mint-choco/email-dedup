@@ -2,11 +2,11 @@
 import uvicorn
 from fastapi import FastAPI
 from app.api.routers.email_query_router import router as email_router
-from src.app.infrastructure.database import Database
+from app.infrastructure.database import Database
 from loguru import logger
 import asyncio
-from src.app.services.publish_email_service import PublishEmailService
-from src.app.services.subscribe_email_service import SubscribeEmailService
+from app.services.publish_email_service import PublishEmailService
+from app.services.subscribe_email_service import SubscribeEmailService
 
 app = FastAPI(title="Email Deduplication API")
 

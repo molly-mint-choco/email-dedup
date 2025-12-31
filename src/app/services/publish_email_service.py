@@ -1,7 +1,7 @@
 from pathlib import Path
-from src.config import config
-from src.app.services.aioproducer import AIOProducer
-from src.app.services.kafka_payload import KafkaPayload
+from config import config
+from app.services.aioproducer import AIOProducer
+from app.services.kafka_payload import KafkaPayload
 from loguru import logger
 import os
 

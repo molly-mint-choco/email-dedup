@@ -5,12 +5,12 @@ from loguru import logger
 from typing import List, Optional
 import uuid
 from simhash import Simhash
-from src.config import config
+from config import config
 from pathlib import Path
 import re
-from src.app.infrastructure.database import Database
-from src.app.infrastructure.repo import EmailRepository
-from src.app.domain.data_model import CanonicalThread, Document
+from app.infrastructure.database import Database
+from app.infrastructure.repo import EmailRepository
+from app.domain.data_model import CanonicalThread, Document
 import time
 
 

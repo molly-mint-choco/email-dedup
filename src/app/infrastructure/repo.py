@@ -1,6 +1,6 @@
 from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.app.domain.data_model import CanonicalThread, Document, AuditLog
+from app.domain.data_model import CanonicalThread, Document, AuditLog
 from loguru import logger
 from typing import List, Optional
 import uuid

@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.
 
 import asyncio
 from loguru import logger
-from src.app.services.subscribe_email_service import SubscribeEmailService
+from app.services.subscribe_email_service import SubscribeEmailService
 
 async def test_run_sub():
     service = SubscribeEmailService()

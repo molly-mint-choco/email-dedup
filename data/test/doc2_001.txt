@@ -1,0 +1,11 @@
+From: Alice Tan <alice.tan@acme.test>
+To: Backend Engineering Team <backend@acme.test>
+Date: Tue, 10 Dec 2024 13:45:00 +0800
+Subject: Kafka retention confirmation
+
+Hi team,
+
+Just to confirm, are we aligned on seven days for email-ingest and thirty days for email-dedup?
+
+Thanks,
+Alice

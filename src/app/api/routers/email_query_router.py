@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
-from src.app.application.query_handler import EmailQueryHandler
+from app.application.query_handler import EmailQueryHandler
 from typing import List
 import uuid
 

@@ -1,11 +1,11 @@
 import asyncio
-from src.config import config
-from src.app.services.aioconsumer import AIOConsumer
+from config import config
+from app.services.aioconsumer import AIOConsumer
 from loguru import logger
 from confluent_kafka import Message, KafkaError
 import orjson
-from src.app.services.kafka_payload import KafkaPayload
-from src.app.application.email_processor import EmailProcessor
+from app.services.kafka_payload import KafkaPayload
+from app.application.email_processor import EmailProcessor
 import os
 
 class SubscribeEmailService:

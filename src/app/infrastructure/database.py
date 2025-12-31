@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy_utils import create_database, database_exists
 from sqlalchemy import create_engine
-from src.config import config
+from config import config
 from loguru import logger
-from src.app.domain.data_model import Base
+from app.domain.data_model import Base
 import os
 
 

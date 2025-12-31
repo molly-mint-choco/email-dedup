@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
 
 import asyncio
-from src.app.infrastructure.database import Database
+from app.infrastructure.database import Database
 from sqlalchemy import text
 from loguru import logger
 

@@ -8,9 +8,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.
 import asyncio
 import uuid
 from loguru import logger
-from src.app.infrastructure.database import Database
-from src.app.infrastructure.repo import EmailRepository
-from src.app.domain.data_model import Document, CanonicalThread
+from app.infrastructure.database import Database
+from app.infrastructure.repo import EmailRepository
+from app.domain.data_model import Document, CanonicalThread
 
 async def test_repo():
     db = Database()
