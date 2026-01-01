@@ -4,6 +4,7 @@ from app.domain.data_model import CanonicalThread, Document, AuditLog
 from loguru import logger
 from typing import List, Optional
 import uuid
+from sqlalchemy import update
 
 class EmailRepository:
     def __init__(self, session: AsyncSession) -> None:
@@ -68,6 +69,28 @@ class EmailRepository:
             select(CanonicalThread).where(CanonicalThread.thread_length == thread_length)
         )
         return list(result.scalars().all())
+    
+    async def get_child_threads_by_parent_hash_and_length_async(self, parent_hash: int, thread_length: int) -> List[CanonicalThread]:
+        result = await self.session.execute(
+            select(CanonicalThread).where(CanonicalThread.thread_length == thread_length,
+                                          CanonicalThread.parent_hash == parent_hash,
+                                          CanonicalThread.parent_id == None)
+        )
+        return list(result.scalars().all())
+    
+    async def link_child_threads_to_parent_thread_async(self, parent_cano_id: uuid.UUID, parent_hash: int, thread_length: int) -> List[uuid.UUID]:
+        result = await self.session.execute(
+            update(CanonicalThread)
+            .where(
+                CanonicalThread.parent_hash == parent_hash,
+                CanonicalThread.thread_length == thread_length,
+                CanonicalThread.parent_id == None
+            )
+            .values(parent_id = parent_cano_id)
+            .returning(CanonicalThread.id)
+        )
+        return list(result.scalars().all())
+
 
     def insert_audit_log(self, new_audit_log):
         self.session.add(new_audit_log)

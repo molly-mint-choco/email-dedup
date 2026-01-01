@@ -73,7 +73,7 @@ class EmailProcessor:
                         thread_length=thread_length
                     )
                     
-                    # 4. Parent Thread Identification
+                    # 4. Identify Its Parent Thread
                     if thread_length > 1:
                         # Reconstruct parent content by removing the most recent part
                         parent_content = "".join(email_parts[1:])
@@ -90,8 +90,17 @@ class EmailProcessor:
 
                     repo.insert_canonical_thread(new_cano)
                     new_doc.cano_id = new_cano.id
-                
-                # 5. Insert Document
+
+                    # 5. Check If Itself Is Parent Of Others
+                    child_ids = await repo.link_child_threads_to_parent_thread_async(new_cano.id, self_hash.value, thread_length+1) # type: ignore
+                    if child_ids:
+                        ids_str = ", ".join(str(id) for id in child_ids)
+                        logger.info(f"Found {len(child_ids)} children for Parent Thread {new_cano.id}: [{ids_str}]")
+                    else:
+
+                        logger.info(f"No orphan children found for thread {new_cano.id}")
+
+                # 6. Insert Document
                 repo.insert_document(new_doc)
             
             duration = time.perf_counter() - start_time
