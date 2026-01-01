@@ -1,0 +1,27 @@
+From: Alexis Lowe <alowe@bigcorp.com>
+To: Neil Thompson
+CC: Samantha Cole
+Subject: Discussion on Infrastructure Modernization
+
+----------------------------------------
+
+Hi Neil,
+
+I hope this message finds you well. I've been thinking over our recent discussions around the technical infrastructure and I felt it was time to extend the conversation a bit. It's no secret that we've been grappling with some issues as our needs continue to evolve and our infrastructure tries to keep pace.
+
+I've been taking a deep dive into the situation, trying to understand the gaps in our current system and how we can best bridge them. I'm sure you've been experiencing these challenges firsthand in your department too. Our current infrastructure was designed with the demands of a smaller organization in mind and, as BigCorp has grown, it's become clear that we need to scale up our technology to match our ambitions.
+
+There are several areas I believe we should focus our attention on. The first is our data centers. They've served us well so far, but the increasing volume of data we're handling is putting a strain on them. We need to consider investing in more robust and scalable solutions, perhaps even exploring cloud computing options. 
+
+Secondly, there's the issue of network security. With cyber threats becoming more sophisticated, we need to ensure our infrastructure is equipped to handle these challenges. This might involve upgrading our firewall systems or implementing more stringent access control measures.
+
+Last, but certainly not least, is the need for infrastructure that supports remote work. The recent shift to working from home has highlighted the need for reliable, secure, and efficient remote access to our systems. This is something we can't afford to ignore.
+
+I'd really like to hear your thoughts on these points. Your team is on the frontline of these issues, and your insights would be invaluable. Perhaps we could arrange a meeting next week to discuss this further? Samantha, I’ve included you in this email as I believe your expertise in network security will be essential to this discussion.
+
+Looking forward to your feedback.
+
+Best,
+Alexis Lowe
+Exec. VP
+alowe@bigcorp.com

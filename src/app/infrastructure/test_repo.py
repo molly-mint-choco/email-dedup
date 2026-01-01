@@ -32,11 +32,11 @@ async def test_repo():
         repo = EmailRepository(session)
         
         logger.debug(f"insert new canonical thread with id: {new_cano_thread.id}")
-        await repo.insert_canonical_thread_async(new_cano_thread)
+        await repo.insert_canonical_thread(new_cano_thread)
         logger.debug(f"successully inserted new canonical thread with id: {new_cano_thread.id}")
         
         logger.debug(f"insert new document with id: {new_doc.id}")
-        await repo.insert_document_async(new_doc)
+        await repo.insert_document(new_doc)
         logger.debug(f"successully inserted new document with id: {new_doc.id}")
 
 

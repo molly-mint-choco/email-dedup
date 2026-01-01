@@ -1,0 +1,19 @@
+From: Fiona White <fwhite@bigcorp.com>
+To: Adam Palmer
+CC: Yolanda Walters
+Subject: Re: System Infrastructure Update
+
+----------------------------------------
+
+Dear Adam,
+
+Following our previous conversation, I have gathered more details regarding the proposed changes to our technical infrastructure.  
+
+Our IT team has put forward a comprehensive plan that will enhance the efficiency of our system operations significantly. However, the implementation of this plan will require a short period of downtime. As we discussed, we will schedule this during off-peak hours to minimize any potential disruption to our operations.
+
+I will forward the detailed plan for your review shortly. Please feel free to share any concerns or suggestions you may have. Your input is invaluable as we move forward with this transition.
+
+Best regards,
+Fiona White
+Manager, Customer Support
+fwhite@bigcorp.com

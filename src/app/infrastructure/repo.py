@@ -15,7 +15,7 @@ class EmailRepository:
         )
         return result.scalars().first()
     
-    async def insert_document_async(self, new_doc) -> Document:
+    def insert_document(self, new_doc) -> Document:
         self.session.add(new_doc)
         # await self.session.flush()
         # await self.session.refresh()
@@ -53,7 +53,7 @@ class EmailRepository:
         )
         return list(result.scalars().all())
 
-    async def insert_canonical_thread_async(self, new_cano_thread) -> CanonicalThread:
+    def insert_canonical_thread(self, new_cano_thread) -> CanonicalThread:
         self.session.add(new_cano_thread)
         return new_cano_thread
     
@@ -69,4 +69,6 @@ class EmailRepository:
         )
         return list(result.scalars().all())
 
-    # TODO: audit log
+    def insert_audit_log(self, new_audit_log):
+        self.session.add(new_audit_log)
+        return

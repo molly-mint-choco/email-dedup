@@ -1,0 +1,23 @@
+From: Neil Thompson <nthompson@bigcorp.com>
+To: Samantha Cole
+CC: Daniel Morales
+Subject: Fwd: Enhancements to our IT Infrastructure
+
+----------------------------------------
+
+Hi Samantha,
+
+Hope this email finds you well. I'm looping in Daniel as well, since I believe he'd be interested in the subject matter.
+
+Recently, I've been in discussions with several of our key vendors regarding possible enhancements to our technical infrastructure. The aim is to improve our system's overall performance and reliability, while ensuring we stay within budget.
+
+The vendors have proposed some interesting ideas such as implementing advanced server architecture and cloud-based solutions. These changes, while somewhat complex, could significantly boost our system's efficiency and provide us with a more robust, scalable infrastructure.
+
+Before we proceed with further discussions, I'd love to get your input on this. Perhaps we could arrange a meeting next week to discuss these proposals in more detail? Daniel, I'd value your input as well.
+
+I'm excited about the potential improvements these changes could bring, and I'm looking forward to hearing your thoughts.
+
+Best,
+Neil Thompson
+Sr. VP
+nthompson@bigcorp.com

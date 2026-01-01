@@ -26,7 +26,7 @@ class SubscribeEmailService:
             self.kafka_configs["sasl.username"] = os.getenv("KAFKA_SASL_USERNAME")
             self.kafka_configs["sasl.password"] = os.getenv("KAFKA_SASL_PASSWORD")
 
-        logger.info(f'subscribe kafka configs: {self.kafka_configs}')
+        logger.debug(f'subscribe kafka configs: {self.kafka_configs}')
 
         self.topics = [config.data['kafka']['topic']]
         self.max_workers = config.data['kafka']['consumer']['max_workers']

@@ -1,0 +1,74 @@
+From: Alexis Lowe <alowe@bigcorp.com>
+To: Neil Thompson <nthompson@bigcorp.com>
+CC: Samantha Cole
+Subject: Re: Discussion on Infrastructure Modernization
+
+Hi Neil,
+
+ I am glad to hear that the points I raised resonate with the challenges in your⎼ d epartment. It's 
+reas‸suring to know we're aligned in terms of our perception of the issues at hand.
+
+I wholeheartedly concur that cloud computing could be a viable solu′tion for the increas″ingly voluminous data. You'll find our expertise in this arena will prove to be useful.
+
+We are in alignment o
+n the se cur⎼ity f
+ront too. I am l⎯ooking˙ forward to discussing specific steps wit h you, Samantha, ∗and the rest of the team.
+
+Completel⎯y agree about the need to shift towards reliable remote work solutions. A well-implemented VDI and a robust VPN solution could make significant strides.
+
+Looking forward to our meeting next week. I'm sure⁔ our discussions will prove to be fruitful in addressing these issues.
+
+Thank you for being rece ptive to these suggestions. I look forward to working together in addressing these challenges.
+
+Best regards,
+Alexis
+
+From: Neil Thompson <nthompson@bigcorp.com>
+To: Alexis Lowe <alowe@bigcorp.com>
+CC: Samantha Cole
+Subject: Re: Discussion on Infrastructure Modernization
+
+Hi Alexis,
+
+Thanks for your thoughtful email. The points you've highlighted resonate with the challenges we have been encountering in my department. 
+
+I completely agree that our data centers need an upgrade to handle the increasing volume of data. Cloud computing could be a good option for us. Whether private, public, or hybrid, it may offer the scalability we need.
+
+On network security, your thoughts align with ours. Improving our firewall systems and implementing stricter access control measures are necessary to handle sophisticated cyber threats. We'll be able to discuss more specific steps with Samantha in our meeting.
+
+Finally, the shift to remote work is indeed urgent and important. I believe we should consider investing in solid virtual private network (VPN) solutions and possibly look into virtual desktop infrastructure (VDI) to provide employees secure and efficient access.
+
+A meeting next week would be fitting to hash out these issues in more detail. I appreciate you bringing Samantha into this conversation, a breadth of understanding of the network security perspective will certainly enrich our discussions.
+
+Thanks again for reaching out. I'm looking forward to our meeting and working together to address these pressing challenges.
+
+Best,
+Neil
+
+From: Alexis Lowe <alowe@bigcorp.com>
+To: Neil Thompson
+CC: Samantha Cole
+Subject: Discussion on Infrastructure Modernization
+
+----------------------------------------
+
+Hi Neil,
+
+I hope this message finds you well. I've been thinking over our recent discussions around the technical infrastructure and I felt it was time to extend the conversation a bit. It's no secret that we've been grappling with some issues as our needs continue to evolve and our infrastructure tries to keep pace.
+
+I've been taking a deep dive into the situation, trying to understand the gaps in our current system and how we can best bridge them. I'm sure you've been experiencing these challenges firsthand in your department too. Our current infrastructure was designed with the demands of a smaller organization in mind and, as BigCorp has grown, it's become clear that we need to scale up our technology to match our ambitions.
+
+There are several areas I believe we should focus our attention on. The first is our data centers. They've served us well so far, but the increasing volume of data we're handling is putting a strain on them. We need to consider investing in more robust and scalable solutions, perhaps even exploring cloud computing options. 
+
+Secondly, there's the issue of network security. With cyber threats becoming more sophisticated, we need to ensure our infrastructure is equipped to handle these challenges. This might involve upgrading our firewall systems or implementing more stringent access control measures.
+
+Last, but certainly not least, is the need for infrastructure that supports remote work. The recent shift to working from home has highlighted the need for reliable, secure, and efficient remote access to our systems. This is something we can't afford to ignore.
+
+I'd really like to hear your thoughts on these points. Your team is on the frontline of these issues, and your insights would be invaluable. Perhaps we could arrange a meeting next week to discuss this further? Samantha, I’ve included you in this email as I believe your expertise in network security will be essential to this discussion.
+
+Looking forward to your feedback.
+
+Best,
+Alexis Lowe
+Exec. VP
+alowe@bigcorp.com

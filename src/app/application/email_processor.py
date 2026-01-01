@@ -20,7 +20,7 @@ class EmailProcessor:
         self.bit_distance_threshold = config.data['email']['threshold']
         self.max_workers = config.data['email']['max_workers']
         self.executor = ThreadPoolExecutor(max_workers=self.max_workers)
-        self.divider = "-----Original Message-----"
+        self.divider_re = r'(?=From: .+\nTo: .+\n(?:CC: .+\n)?Subject: )'
         self.db = Database()
 
     async def process_async(self, file_name: str):
@@ -76,7 +76,7 @@ class EmailProcessor:
                     # 4. Parent Thread Identification
                     if thread_length > 1:
                         # Reconstruct parent content by removing the most recent part
-                        parent_content = self.divider.join(email_parts[1:])
+                        parent_content = "".join(email_parts[1:])
                         parent_hash = await self.generate_hash_async(parent_content)
                         new_cano.parent_hash = str(parent_hash.value) # type: ignore
                         
@@ -88,11 +88,11 @@ class EmailProcessor:
                         else:
                             logger.warning(f"Thread length is {thread_length}, but parent hash {str(new_cano.parent_hash)} was not found in DB.")
 
-                    await repo.insert_canonical_thread_async(new_cano)
+                    repo.insert_canonical_thread(new_cano)
                     new_doc.cano_id = new_cano.id
                 
                 # 5. Insert Document
-                await repo.insert_document_async(new_doc)
+                repo.insert_document(new_doc)
             
             duration = time.perf_counter() - start_time
             logger.success(f"Finished processing {file_name} in {duration:.3f}s")
@@ -112,8 +112,7 @@ class EmailProcessor:
         return t
 
     def split_emails(self, text: str) -> List[str]:
-        # assume that replies are splited by '-----Original Message-----'
-        return text.split(self.divider)    
+        return [splitted for splitted in re.split(self.divider_re, text) if splitted.strip()] # remove empty parts
 
     async def read_document_content_async(self,file_name) -> str:
         file_path = Path(self.read_dir) / file_name

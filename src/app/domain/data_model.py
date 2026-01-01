@@ -1,10 +1,9 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Index, Uuid, create_engine
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.mysql import JSON, BIGINT
+from sqlalchemy.dialects.mysql import JSON
 from sqlalchemy.orm import Mapped, mapped_column
 import uuid
-from typing import Optional
 
 Base = declarative_base()
 
@@ -30,8 +29,10 @@ class Document(Base):
 class AuditLog(Base):
     __tablename__ = 'audit_log'
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
-    action_type = Column(String(50), nullable=False) # db operation, kafka, api calls
+    resource = Column(String(50), nullable=False) # db operation, kafka, api calls
     action = Column(String(50), nullable=False) # INSERT/UPDATE, Pub/Sub
-    action_content = Column(JSON, nullable=True) # serialized object
+    content = Column(JSON, nullable=True) # serialized object
+    description = Column(String(255), nullable=True)
+    actor = Column(String(255), nullable = False) # user/service
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
