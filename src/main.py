@@ -40,10 +40,20 @@ async def run_sub():
         await service.close_async()
         logger.debug("Consumer execution finished.")
 
+def set_up_logger():
+    logger.add(
+    "logs/log_{time:YYYY-MM-DD_HH-mm-ss}.log",
+    format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
+    level="DEBUG"
+)
+
+
 config = uvicorn.Config(app, host="0.0.0.0", port=8000, loop="asyncio")
 server = uvicorn.Server(config)
 
 async def main():
+    set_up_logger()
+
     # set up db first
     try:
         db = Database()

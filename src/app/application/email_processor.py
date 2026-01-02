@@ -12,6 +12,7 @@ from app.infrastructure.database import Database
 from app.infrastructure.repo import EmailRepository
 from app.domain.data_model import CanonicalThread, Document
 import time
+import unicodedata
 
 
 class EmailProcessor:
@@ -66,7 +67,7 @@ class EmailProcessor:
                 if existing_cano_id is not None:
                     new_doc.cano_id = existing_cano_id
                 else:
-                    logger.info("No duplicates found. Creating new Canonical Thread record.")
+                    logger.info(f"No duplicates found for file {file_name}. Creating new Canonical Thread record.")
                     new_cano = CanonicalThread(
                         id=uuid.uuid4(),
                         hash=str(self_hash.value),
@@ -125,12 +126,19 @@ class EmailProcessor:
         t = re.sub(r'<[^>]+>', '', t)
         # shrink extra whitespaces
         t = re.sub(r'\s+', ' ', t)
+        # make encoding consistent
+        t = unicodedata.normalize("NFKC", t)
         return t
 
     def split_emails(self, text: str) -> List[str]:
         return [splitted for splitted in re.split(self.divider_re, text) if splitted.strip()] # remove empty parts
 
     async def read_document_content_async(self,file_name) -> str:
+        COMMON_ENCODINGS = [
+            "utf-8-sig",
+            "cp1252",
+            "latin-1",
+        ]
         file_path = Path(self.read_dir) / file_name
         try:
             async with aiofiles.open(file_path, mode='r', encoding='utf-8') as f:
@@ -138,6 +146,21 @@ class EmailProcessor:
         except FileNotFoundError:
             logger.error(f"File {file_name} not found at {file_path}")
             raise
+        except UnicodeDecodeError:
+            logger.warning(f"File {file_name} could not be decoded with UTF-8, trying other encodings")
+
+        for encoding in COMMON_ENCODINGS:
+            try:
+                async with aiofiles.open(file_path, mode='r', encoding=encoding) as f:
+                    content = await f.read()
+                    logger.info(f"File {file_name} decoded successfully with {encoding}")
+                    return content
+            except (UnicodeDecodeError, LookupError):
+                continue
+        
+        logger.error(f"File {file_name} could not be decoded with any encoding: ['utf-8', {COMMON_ENCODINGS}]")
+        raise UnicodeDecodeError("unknown",b"",0,1,f"Could not decode {file_name} with any encoding")
+
     
     def _generate_hash(self, text: str) -> Simhash:
         text = self.normalize(text)
