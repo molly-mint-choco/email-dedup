@@ -48,7 +48,7 @@ class EmailProcessor:
                 
                 # 2. Deduplication Check
                 # Filter by thread length to minimize distance calculations
-                candidates = await repo.get_canonical_threads_by_length(thread_length)
+                candidates = await repo.get_canonical_threads_by_length_async(thread_length)
                 logger.debug(f"Length-match candidates found: {len(candidates)}")
 
                 existing_cano_id = None
@@ -80,25 +80,32 @@ class EmailProcessor:
                         parent_hash = await self.generate_hash_async(parent_content)
                         new_cano.parent_hash = str(parent_hash.value) # type: ignore
                         
-                        # Search for parent by its hash, assume all parents come before children
-                        parent_thread = await repo.get_canonical_thread_by_hash_async(parent_hash.value) # type: ignore
-                        if parent_thread:
-                            new_cano.parent_id = parent_thread.id
-                            logger.info(f"Parent found. Linked Thread {str(new_cano.id)} to Parent {str(parent_thread.id)}")
-                        else:
-                            logger.warning(f"Thread length is {thread_length}, but parent hash {str(new_cano.parent_hash)} was not found in DB.")
+                        # Search for parent hash candidates by its thread length
+                        parent_thread_candidates = await repo.get_canonical_threads_by_length_async(thread_length-1)
+                        logger.info(f"Length-Match parent thread candidates found: {len(parent_thread_candidates)}")
+
+                        for parent_thread_candidate in parent_thread_candidates:
+                            if parent_thread_candidate.hash is not None:
+                                is_duplicate = await self.check_near_duplicate_async(parent_hash, Simhash(int(parent_thread_candidate.hash))) # type: ignore
+                                if is_duplicate:
+                                    logger.success(f"Parent thread {str(parent_thread_candidate.id)} found for Canonical Thread {str(new_cano.id)}")
+                                    new_cano.parent_id = parent_thread_candidate.id
+                                    break
+                        if new_cano.parent_id is None:
+                            logger.info(f"Currently parent thread not found in DB for Canonical Thread {str(new_cano.id)}")
 
                     repo.insert_canonical_thread(new_cano)
                     new_doc.cano_id = new_cano.id
 
                     # 5. Check If Itself Is Parent Of Others
-                    child_ids = await repo.link_child_threads_to_parent_thread_async(new_cano.id, self_hash.value, thread_length+1) # type: ignore
-                    if child_ids:
-                        ids_str = ", ".join(str(id) for id in child_ids)
-                        logger.info(f"Found {len(child_ids)} children for Parent Thread {new_cano.id}: [{ids_str}]")
-                    else:
+                    child_thread_candidates = await repo.get_orphan_child_threads_by_length_async(thread_length+1)
+                    logger.info(f"Length-Match child thread candidates found: {len(child_thread_candidates)}")
 
-                        logger.info(f"No orphan children found for thread {new_cano.id}")
+                    for child_thread_candidate in child_thread_candidates:
+                        is_duplicate = await self.check_near_duplicate_async(self_hash, Simhash(int(child_thread_candidate.parent_hash))) # type: ignore
+                        if is_duplicate:
+                                logger.success(f"Child thread {str(child_thread_candidate.id)} linked to current thread {str(new_cano.id)}")
+                                child_thread_candidate.parent_id = new_cano.id
 
                 # 6. Insert Document
                 repo.insert_document(new_doc)

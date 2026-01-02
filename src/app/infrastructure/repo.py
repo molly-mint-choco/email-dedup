@@ -64,30 +64,17 @@ class EmailRepository:
         )
         return result.scalars().first()
     
-    async def get_canonical_threads_by_length(self, thread_length: int) -> List[CanonicalThread]:
+    async def get_canonical_threads_by_length_async(self, thread_length: int) -> List[CanonicalThread]:
         result = await self.session.execute(
             select(CanonicalThread).where(CanonicalThread.thread_length == thread_length)
         )
         return list(result.scalars().all())
     
-    async def get_child_threads_by_parent_hash_and_length_async(self, parent_hash: int, thread_length: int) -> List[CanonicalThread]:
+    async def get_orphan_child_threads_by_length_async(self, thread_length: int) -> List[CanonicalThread]:
         result = await self.session.execute(
             select(CanonicalThread).where(CanonicalThread.thread_length == thread_length,
-                                          CanonicalThread.parent_hash == parent_hash,
+                                          CanonicalThread.parent_hash != None,
                                           CanonicalThread.parent_id == None)
-        )
-        return list(result.scalars().all())
-    
-    async def link_child_threads_to_parent_thread_async(self, parent_cano_id: uuid.UUID, parent_hash: int, thread_length: int) -> List[uuid.UUID]:
-        result = await self.session.execute(
-            update(CanonicalThread)
-            .where(
-                CanonicalThread.parent_hash == parent_hash,
-                CanonicalThread.thread_length == thread_length,
-                CanonicalThread.parent_id == None
-            )
-            .values(parent_id = parent_cano_id)
-            .returning(CanonicalThread.id)
         )
         return list(result.scalars().all())
 
