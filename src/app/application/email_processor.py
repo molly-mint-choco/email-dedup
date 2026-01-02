@@ -50,7 +50,7 @@ class EmailProcessor:
                 # 2. Deduplication Check
                 # Filter by thread length to minimize distance calculations
                 candidates = await repo.get_canonical_threads_by_length_async(thread_length)
-                logger.debug(f"Length-match candidates found: {len(candidates)}")
+                logger.info(f"Length-match candidates found: {len(candidates)}")
 
                 existing_cano_id = None
                 for cano_thread in candidates:

@@ -32,23 +32,20 @@ src/
 
 ### Emails and Thread Relations
 
-- All emails come in chronological order. 
-- Parent emails come in before child emails.
-- Assume deduplication is performed on a parent email before any of its child emails arrive. As a result, scenarios like 0-1m-2 will not occur, since a near-duplicate parent (0-1m) would already have been removed before the next canonical thread is generated.
 - The first email received in the canonical thread is considered the baseline. Any emails belonging to the same canonical thread that arrive after the baseline and are duplicates or near-duplicates are labeled accordingly. For example, the first email is labeled 0-1; a near-duplicate arriving after 0-1 is labeled 0-1m. A near-duplicate email (0-1m) cannot logically arrive before the original baseline email (0-1). Duplicate emails will be removed (but will still be saved in the Document table in the database).
 - A parent email can have multiple child emails, e.g., 0-1 (P), 0-1-2 (C1), 0-1-3 (C2). 
-- A child email can have only one parent; i.e., the canonical thread relations are traceable upwards only.
+- A child email can have only one parent; i.e., the canonical thread relations are traceable **upwards** only.
 - The canonical thread hierarchy follows a tree structure.
 
 ### Content Parsing
 
 - Replies appear on top of the previous emails in a single document.
-- Replies are separated by a predefined divider. Assume it’s ‘-----Original Message-----’
-- We’re not considering sender, recipient, topic, subject, datetime, etc., information as identifiers to separate replies and distinguish emails. 
+- Replies can be separated by a predefined divider (e.g. regular expression)
+- We’re not considering sender, recipient, topic, subject, datetime, etc., information as identifiers to separate replies and distinguish emails.
 
 ### Data Ingestion
 
-* To simulate the sequential arrival of emails in real life, files are read from the data folder in order of their creation time and processed through a data ingestion pipeline using a message queue.
+- To simulate the arrival of emails, files are read from the data folder and processed through a data ingestion pipeline using a message queue.
 
 ## How It Works
 
@@ -60,6 +57,11 @@ src/
    - Creates new canonical thread or links to existing duplicate
    - Identifies parent threads by hashing email content minus most recent part
 3. **API Queries**: REST API provides access to thread relationships and document mappings
+
+## Performance
+
+- **100%** Correctness on data/eval folder
+- 99.7% Correctness on data/test folder (Failed to process 4 files due to Simhash collision)
 
 ## Prerequisites
 
@@ -99,7 +101,7 @@ src/
    [email]
    read_dir = "data/eval"
    max_workers = 4
-   threshold = 10  # SimHash bit distance threshold
+   threshold = 3
    ```
 
 4. **Set up the database**
@@ -121,6 +123,8 @@ kubectl rollout status -n email-dedup deploy/email-dedup-app
 ### Running Locally
 
 ```bash
+brew service start zookeeper
+brew service start kafka
 python src/main.py
 ```
 
@@ -161,7 +165,8 @@ Returns the parent thread ID for a given canonical thread.
 ```http
 GET /emails/canonical-thread/{cano_id}/upstream
 ```
-Returns the complete upstream hierarchy chain for a canonical thread.
+Returns the complete upstream hierarchy chain for a canonical thread.<br>
+Please enter the leaf child's canonical id for better result.
 
 ## Configuration
 
@@ -171,7 +176,7 @@ Key configuration parameters in `settings.toml`:
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `email.threshold` | SimHash bit distance threshold for duplicate detection | 10 |
+| `email.threshold` | SimHash bit distance threshold for duplicate detection | 3 |
 | `email.max_workers` | Thread pool size for hash computation | 4 |
 | `kafka.consumer.max_workers` | Concurrent Kafka consumer workers | 2 |
 | `kafka.consumer.poll_interval` | Kafka polling interval (seconds) | 1.0 |
@@ -250,3 +255,4 @@ See [requirements.txt](requirements.txt) for complete list.
 
 ## Improvement Features
 - Use Redis to maintain a canonical thread pool containing only validated threads, avoid repeated database queries each time for SimHash comparisons.
+- Resolve Simhash collision problem using tokenization, weighting
