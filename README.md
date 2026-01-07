@@ -123,8 +123,8 @@ kubectl rollout status -n email-dedup deploy/email-dedup-app
 ### Running Locally
 
 ```bash
-brew service start zookeeper
-brew service start kafka
+brew services start zookeeper
+brew services start kafka
 python src/main.py
 ```
 
